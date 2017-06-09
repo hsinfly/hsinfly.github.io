@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /categories/
+Allow: /posts/
+Allow: /tags/ 
+Disallow: /assets/
+
+Sitemap: https://laoyuan.me/sitemap.xml
