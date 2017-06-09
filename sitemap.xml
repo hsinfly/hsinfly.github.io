@@ -1,227 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-
-    
+  
   <url>
     <loc>https://laoyuan.me/posts/web-cdn-and-github-pages.html</loc>
-    <lastmod>2017-06-09T09:17:23.236Z</lastmod>
-    <data>
-        <display>
-        <title>Github Pages 开启 HTTPS 与 CDN 加速</title>
-        <pubTime>2017-06-09T08:17:56.000Z</pubTime>
-        
-        <tag>https</tag>
-         
-        <tag>cdn</tag>
-         
-        <tag>github</tag>
-         
-         
-           
-             
-              <breadCrumb title="分享" url="https://laoyuan.me/categories/share/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-09T09:17:23.236Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/hello.html</loc>
-    <lastmod>2017-06-09T08:11:09.430Z</lastmod>
-    <data>
-        <display>
-        <title>你好，世界</title>
-        <pubTime>2017-05-20T11:34:52.000Z</pubTime>
-        
-         
-           
-             
-              <breadCrumb title="生活" url="https://laoyuan.me/categories/life/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-09T08:11:09.430Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/how-to-show-mysql-lock.html</loc>
-    <lastmod>2017-06-08T09:27:38.027Z</lastmod>
-    <data>
-        <display>
-        <title>快速查看和解决MySQL死锁问题</title>
-        <pubTime>2017-06-08T08:52:03.000Z</pubTime>
-        
-        <tag>mysql</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-08T09:27:38.027Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/distributed-locks-with-redis.html</loc>
-    <lastmod>2017-06-08T08:21:14.301Z</lastmod>
-    <data>
-        <display>
-        <title>基于Redis实现分布式锁</title>
-        <pubTime>2017-06-06T05:37:34.000Z</pubTime>
-        
-        <tag>redis</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-08T08:21:14.301Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/mysql-data-not-repeat.html</loc>
-    <lastmod>2017-06-07T08:33:05.664Z</lastmod>
-    <data>
-        <display>
-        <title>MySQL防止数据重复插入</title>
-        <pubTime>2017-06-02T03:27:15.000Z</pubTime>
-        
-        <tag>mysql</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-07T08:33:05.664Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/mysql-repeatable-read.html</loc>
-    <lastmod>2017-06-07T05:28:08.630Z</lastmod>
-    <data>
-        <display>
-        <title>理解Mysql可重复读事务隔离级别</title>
-        <pubTime>2017-06-02T09:07:41.000Z</pubTime>
-        
-        <tag>mysql</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-07T05:28:08.630Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/mysql-for-update.html</loc>
-    <lastmod>2017-06-07T05:27:56.943Z</lastmod>
-    <data>
-        <display>
-        <title>MySQL使用For Update锁表</title>
-        <pubTime>2017-06-07T03:27:34.000Z</pubTime>
-        
-        <tag>mysql</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-06-07T05:27:56.943Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/redis-set-diff-inter-union.html</loc>
-    <lastmod>2017-05-27T08:10:57.413Z</lastmod>
-    <data>
-        <display>
-        <title>Redis集合差集、交集、并集处理</title>
-        <pubTime>2017-05-26T08:47:58.000Z</pubTime>
-        
-        <tag>redis</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-05-27T08:10:57.413Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/redis-data-structure.html</loc>
-    <lastmod>2017-05-25T09:09:25.930Z</lastmod>
-    <data>
-        <display>
-        <title>Redis数据结构</title>
-        <pubTime>2017-05-24T01:42:32.000Z</pubTime>
-        
-        <tag>redis</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-05-25T09:09:25.930Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/linux-command.html</loc>
-    <lastmod>2017-05-25T09:09:22.630Z</lastmod>
-    <data>
-        <display>
-        <title>常用Linux命令</title>
-        <pubTime>2017-05-23T06:45:11.000Z</pubTime>
-        
-        <tag>linux</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
+    <lastmod>2017-05-25T09:09:22.630Z</lastmod>
+    
+  </url>
+  
   <url>
     <loc>https://laoyuan.me/posts/javascript-data-parse.html</loc>
+    
     <lastmod>2017-05-25T09:09:17.807Z</lastmod>
-    <data>
-        <display>
-        <title>Javascript字符转日期</title>
-        <pubTime>2017-05-25T08:38:11.000Z</pubTime>
-        
-        <tag>javascript</tag>
-         
-         
-           
-             
-              <breadCrumb title="笔记" url="https://laoyuan.me/categories/note/"/>
-          
-        </display>
-    </data>
-    </url>
-
+    
+  </url>
+  
 </urlset>
