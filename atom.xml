@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://laoyuan.me/"/>
-  <updated>2017-06-08T09:27:38.027Z</updated>
+  <updated>2017-06-09T09:13:12.669Z</updated>
   <id>https://laoyuan.me/</id>
   
   <author>
@@ -14,6 +14,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Github Pages 开启 HTTPS 与 CDN 加速</title>
+    <link href="https://laoyuan.me/posts/web-cdn-and-github-pages.html"/>
+    <id>https://laoyuan.me/posts/web-cdn-and-github-pages.html</id>
+    <published>2017-06-09T08:17:56.000Z</published>
+    <updated>2017-06-09T09:13:12.669Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;多次折腾后博客后，还是换回到了Github Pages服务，还是Github用起来最稳定，限制条件少。&lt;br&gt;由于Github Pages自带的域名支持开启HTTPS服务，自定义域名则不支持开启HTTPS服务，需要自己想办法开启HTTPS服务。考虑到国内访问外服还是太慢，考
+    
+    </summary>
+    
+      <category term="分享" scheme="https://laoyuan.me/categories/share/"/>
+    
+    
+      <category term="https" scheme="https://laoyuan.me/tags/https/"/>
+    
+      <category term="cdn" scheme="https://laoyuan.me/tags/cdn/"/>
+    
+      <category term="github" scheme="https://laoyuan.me/tags/github/"/>
+    
+  </entry>
   
   <entry>
     <title>快速查看和解决MySQL死锁问题</title>
