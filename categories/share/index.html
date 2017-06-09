@@ -119,26 +119,12 @@
 
   </section>
   <section class="article typo">
-	  <p>多次折腾后博客后，还是换回到了Github Pages服务，还是Github用起来最稳定，限制条件少。<br>由于Github Pages自带的域名支持开启HTTPS服务，自定义域名则不支持开启HTTPS服务，需要自己想办法开启HTTPS服务。考虑到国内访问外服还是太慢，考虑采用CDN加速的方式开启HTTPS服务。原理如下：<br><img src="https://assets.laoyuan.me/posts/images/cdn-github-https.jpg" alt="Alt &quot;Github Pages 开启 HTTPS 与 CDN 加速流程&quot;" title="Github Pages 开启 HTTPS 与 CDN 加速流程"><br>对比了国内多家CND加速厂家，如：百度云加速，加速乐等，最终选择了360的网站卫士，理由如下：</p>
-<ul>
-<li>能免费开启HTTPS，百度云加速则需要专业版才可以</li>
-<li>附带网站安全防护，虽然对于静态站点，没啥用</li>
-<li>提供免费备案服务</li>
-<li>免费CDN加速，我图片资源是存在<a href="https://portal.qiniu.com/signup?code=3lnoa44s3ee6q" target="_blank" rel="external">七牛云</a>上的，HTTPS流量需要收费，这样既能节约流量，又能免费开启HTTPS</li>
-</ul>
-<p>主要操作步骤如下：</p>
-<ul>
-<li>注册Github账号，搭建好Github Pages服务，这类教程网络上较多，可以自行百度或谷歌</li>
-<li>注册360网站卫士账号，这里说一点，需要实名认证，要拍照</li>
-<li><p>生成自己的SSL证书，土豪可以直接购买证书，或者和我一样，自己生成免费证书，步骤如下：  </p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git <span class="built_in">clone</span> https://github.com/letsencrypt/letsencrypt</div><div class="line"><span class="built_in">cd</span> letsencrypt/</div><div class="line">./letsencrypt-auto certonly --manual --email admin@laoyuan.me <span class="_">-d</span> laoyuan.me</div></pre></td></tr></table></figure>
-</li>
-<li><p>最后一步出现提示时，输入Y再回车；接着会提示往网站上指定路径文件中，存入指定的内容，按照要求创建相关文件再传到网站指定的目录中，再回车开始正式认证和生成。最后拷贝cert.pem与privkey.pem文件，在修改名称为cert.crt与privkey.key；上传到360网站卫士的加速配置中即可。</p>
-</li>
-</ul>
-<p>不过目前很奇怪，360网站卫士CDN加速的网站很容易出现404错误，并且网站回源率特别高。</p>
+	  <p>多次折腾后博客后，还是换回到了Github Pages服务，还是Github用起来最稳定，限制条件少。<br>由于Github Pages自带的域名支持开启HTTPS服务，自定义域名则不支持开启HTTPS服务，需要自己想办法开启HTTPS服务。考虑到国内访问外服还是太慢，考虑采用CDN加速的方式开启HTTPS服务。原理如下：<br><img src="https://assets.laoyuan.me/posts/images/cdn-github-https.jpg" alt="Alt &quot;Github Pages 开启 HTTPS 与 CDN 加速流程&quot;" title="Github Pages 开启 HTTPS 与 CDN 加速流程"><br>
 
-
+    
+	  <div class="readmore">
+      <a href="/posts/web-cdn-and-github-pages.html">阅读更多</a>
+    </div>
     
     
     

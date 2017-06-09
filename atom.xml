@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://laoyuan.me/"/>
-  <updated>2017-06-09T09:13:12.669Z</updated>
+  <updated>2017-06-09T09:17:23.236Z</updated>
   <id>https://laoyuan.me/</id>
   
   <author>
@@ -20,11 +20,11 @@
     <link href="https://laoyuan.me/posts/web-cdn-and-github-pages.html"/>
     <id>https://laoyuan.me/posts/web-cdn-and-github-pages.html</id>
     <published>2017-06-09T08:17:56.000Z</published>
-    <updated>2017-06-09T09:13:12.669Z</updated>
+    <updated>2017-06-09T09:17:23.236Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;多次折腾后博客后，还是换回到了Github Pages服务，还是Github用起来最稳定，限制条件少。&lt;br&gt;由于Github Pages自带的域名支持开启HTTPS服务，自定义域名则不支持开启HTTPS服务，需要自己想办法开启HTTPS服务。考虑到国内访问外服还是太慢，考
+      &lt;p&gt;多次折腾后博客后，还是换回到了Github Pages服务，还是Github用起来最稳定，限制条件少。&lt;br&gt;由于Github Pages自带的域名支持开启HTTPS服务，自定义域名则不支持开启HTTPS服务，需要自己想办法开启HTTPS服务。考虑到国内访问外服还是太慢，考虑采用CDN加速的方式开启HTTPS服务。原理如下：&lt;br&gt;&lt;img src=&quot;https://assets.laoyuan.me/posts/images/cdn-github-https.jpg&quot; alt=&quot;Alt &amp;quot;Github Pages 开启 HTTPS 与 CDN 加速流程&amp;quot;&quot; title=&quot;Github Pages 开启 HTTPS 与 CDN 加速流程&quot;&gt;&lt;br&gt;
     
     </summary>
     
