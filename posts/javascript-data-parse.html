@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>Javascript字符转日期 | 老袁博客</title>
+  <meta name="description" content="记录开发中踩过的雷，新知识备忘" />
+  <meta name="keywords" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="alternate" href="/atom.xml" title="老袁博客">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/assets/css/waves.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+  <header class="blog-header">
+	<div class='wrapper'>
+		<div class="nav-main container container--flex">
+			<a class="logo flat-box" href='/' >
+				老袁博客
+			</a>
+			<div class='menu'>
+				<ul class='h-list'>
+					
+						<li>
+							<a class='flat-box nav-home' href='/'>
+								首页
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-note' href='/categories/note'>
+								笔记
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-life' href='/categories/life'>
+								生活
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-archives' href='/archives'>
+								归档
+							</a>
+						</li>
+					
+				</ul>
+				<div class='underline'></div>
+			</div>
+			
+			<ul class='switcher h-list'>
+				
+				<li class='s-menu'><a href='javascript:void(0)'><span class="icon icon-menu flat-box"></span></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<aside class="menu-phone">
+	<nav>
+		
+			<a href="/" class="nav-home nav">
+				首页
+			</a>
+		
+			<a href="/categories/note" class="nav-note nav">
+				笔记
+			</a>
+		
+			<a href="/categories/life" class="nav-life nav">
+				生活
+			</a>
+		
+			<a href="/archives" class="nav-archives nav">
+				归档
+			</a>
+		
+	</nav>
+</aside>
+
+  <div class="blog-wrapper">
+    <div class='container clearfix'>
+      <div class='blog-main'>
+        <article id="post-javascript-data-parse"
+  class="post white-box article-type-post"
+  itemscope itemprop="blogPost">
+	<section class='meta'>
+	<h2 class="title">
+  	<a href="/posts/javascript-data-parse.html">
+    	Javascript字符转日期
+    </a>
+  </h2>
+	<time>
+	  2017-5-25
+	</time>
+	
+    
+    <div class='cats'>
+        <a href="/categories/note/">笔记</a>
+    </div>
+
+	</section>
+	
+		<section class="toc-wrapper"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#概要"><span class="toc-number">1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#语法"><span class="toc-number">2.</span> <span class="toc-text">语法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参数"><span class="toc-number">3.</span> <span class="toc-text">参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#描述"><span class="toc-number">4.</span> <span class="toc-text">描述</span></a></li></ol></section>
+	
+	<section class="article typo">
+  	<div class="article-entry" itemprop="articleBody">
+    	<p>今天遇到一个需求是需要验证2个时间（HH:mm:ss）必须相差1小时，最终采用Javascript自带的 <code>Date.parse()</code>解决，写了一个公共方法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">validPassPullTime</span>(<span class="params">begin, end</span>) </span>&#123;</div><div class="line">	<span class="keyword">var</span> year = <span class="string">'2017/05/24 '</span>;<span class="comment">//基准时间，由于传入参数不带具体年月日，所以需要补全日期基准</span></div><div class="line">       <span class="comment">//Date.parse() 处理时间格式为:</span></div><div class="line">	<span class="keyword">var</span> beginDate = <span class="built_in">Date</span>.parse(year + begin); <span class="comment">//开始时间  </span></div><div class="line">	<span class="keyword">var</span> endDate = <span class="built_in">Date</span>.parse(year + end); <span class="comment">//结束时间  </span></div><div class="line">	<span class="comment">//相差秒</span></div><div class="line">	<span class="keyword">var</span> seconds = <span class="number">0</span>;</div><div class="line">	<span class="keyword">if</span> (beginDate &gt; endDate) &#123;<span class="comment">//跨夜</span></div><div class="line">		seconds = beginDate - endDate;</div><div class="line">	&#125; <span class="keyword">else</span> &#123;<span class="comment">//不跨夜</span></div><div class="line">		seconds = endDate - beginDate;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//计算出小时数  </span></div><div class="line">	<span class="keyword">var</span> leave1 = seconds % (<span class="number">24</span> * <span class="number">3600</span> * <span class="number">1000</span>);</div><div class="line">	<span class="keyword">var</span> hours = <span class="built_in">Math</span>.floor(leave1 / (<span class="number">3600</span> * <span class="number">1000</span>));</div><div class="line">	<span class="keyword">return</span> hours &gt;= <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法主要用户判断2个时间（HH:mm:ss）相差是否超过一个小时，超过一个小时返回<code>ture</code>,否则返回<code>false</code>。原理就是先用<code>Date.parse()</code>把时间转为毫秒，再通过毫秒进行时间转换与比对。最后总结一下Javascript自带的 <code>Date.parse()</code>方法。<br><a id="more"></a></p>
+<h4 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h4><p>Date.parse() 方法解析一个表示某个日期的字符串，并返回从1970-1-1 00:00:00 UTC 到该日期对象（该日期对象的UTC时间）的毫秒数，如果该字符串无法识别，或者一些情况下，包含了不合法的日期数值（如：2015-02-31），则返回值为NaN。</p>
+<p>不推荐在ES5之前使用Date.parse方法，因为字符串的解析完全取决于实现。直到至今，不同宿主在如何解析日期字符串上仍存在许多差异，因此最好还是手动解析日期字符串（在需要适应不同格式时库能起到很大帮助）。     </p>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><ul>
+<li><p>显示调用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Date</span>.parse(dateString)</div></pre></td></tr></table></figure>
+</li>
+<li><p>隐式调用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> <span class="built_in">Date</span>(dateString)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h4><ul>
+<li>dateString<br>一个符合 RFC2822 或 ISO 8601 日期格式的字符串（其他格式也许也支持，但结果可能与预期不符）。</li>
+<li>返回值<br>一个表示从1970-1-1 00:00:00 UTC到给定日期字符串所表示时间的毫秒数的数值。如果参数不能解析为一个有效的日期，则返回NaN。</li>
+</ul>
+<h4 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h4><p>parse 方法接受一个日期字符串（例如 “Dec 25, 1995”），并返回从 1970-1-1 00:00:00 UTC 到该日期字符串所表示日期的毫秒数。该方法在基于字符串值设置日期值时很有用，例如结合使用<code>setTime()</code> 方法和 <code>Date()</code> 构造函数。parse 方法接受一个表示时间的字符串，返回相应的时间值。该方法可以接受:</p>
+<ul>
+<li>符合 RFC2822 / IETF 日期语法的字符串，如 “Mon, 25 Dec 1995 13:30:00 GMT”。该方法能够理解美国大陆时区的缩写，但是为了更通用，应该使用时区偏移，如 “Mon, 25 Dec 1995 13:30:00 +0430” （格林威治的子午线向东偏移4小时30分钟）。如果没有指定时区，默认使用本地时区。<br>GMT 和 UTC 被看作相等。 如果 RFC2822 格式中不包含时区信息时，会以本地时区来解析日期字符串。</li>
+<li>ISO-8601 日期格式支持。例如，”2011-10-10” （仅日期）或 “2011-10-10T14:48:00” （日期和时间）能够作为参数被传递和解析,但是不推荐使用 “2011-10-10T14:48:00” ，而是使用 “2011/10/10T14:48:00” 格式，因为Safari浏览器不兼容 2016-01-01” 写法。 如果参数字符串只包含日期格式，那么将会使用UTC时区来解析该参数。而如果是ISO 8601 格式中规定的时间加日期的格式，则将会被作为本地时区处理。</li>
+</ul>
+<blockquote>
+<p>由于 parse() 是 Date 的一个静态方法 , 所以应该使用 Date.parse() 来调用，而不是作为 Date 的实例方法。</p>
+</blockquote>
+
+  	</div>
+	  
+	  <div class="article-tags tags">
+      
+        <a href="/tags/javascript/">javascript</a>
+      
+	  </div>
+    
+	</section>
+	
+	<div id="SOHUCS" sid="/posts/javascript-data-parse.html" ></div> 
+<script type="text/javascript"> 
+(function(){ 
+var appid = 'cyt2Iri4K'; 
+var conf = 'prod_a7a21e8a415cb36f40e9c674f42cbecc'; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+</article>
+
+      </div>
+      <aside class='blog-side'>
+        
+  <section class='m_widget categories'>
+<div class='header'>分类</div>
+<div class='content'>
+    
+    <ul class="entry">
+    
+        <li><a class="flat-box" href="/categories/life/"><div class='name'>生活</div><div class='badget'>1</div></a></li>
+    
+        <li><a class="flat-box" href="/categories/note/"><div class='name'>笔记</div><div class='badget'>9</div></a></li>
+    
+    </ul>
+    
+</div>
+</section>
+
+  
+<div class="m_widget tagcloud">
+    <div class="header">标签</div>
+    <div class='content'>
+        <a href="/tags/javascript/" style="font-size: 14px; color: #808080">javascript</a> <a href="/tags/linux/" style="font-size: 14px; color: #808080">linux</a> <a href="/tags/mysql/" style="font-size: 20px; color: #000">mysql</a> <a href="/tags/redis/" style="font-size: 17px; color: #404040">redis</a>
+    </div>
+</div>
+
+
+
+      </aside>
+    </div>
+  </div>
+  <footer class="blog-footer clearfix">
+  <div class="go">
+    <a title="滑到顶部" class="top"><span class="icon icon-arrow-up"></span></a>
+     
+    <a title="滑到底部" class="bottom"><span class="icon icon-arrow-down"></span></a>
+  </div>
+	<div class="social-wrapper">
+  	
+      
+        <a href="/sitemap.xml" class="social map"
+          target="_blank" rel="external" title="站点地图">
+          <span class="icon icon-map"></span>
+        </a>
+      
+    
+  </div>
+  <div>
+    <p>Copyright <a href="https://laoyuan.me" class="codename">Laoyuan' Blog</a> . All rights reserved .</p>
+    <p>Hosted by <a href="https://coding.net/register?key=952daaf0-37ea-4318-b7d9-093147260917" target="_black" rel="nofollow">Coding Pages</a></p>
+</div>
+</footer>
+
+
+  <script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/waves.min.js"></script>
+<script src="/assets/js/jquery.fitvids.js"></script>
+<script src="/assets/js/all.js"></script>
+
+<script src="https://hm.baidu.com/hm.js?4aaad9b419b7455a604387184ee2306c"></script>
+
+
+</body>
+</html>

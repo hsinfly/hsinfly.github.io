@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>MySQL使用For Update锁表 | 老袁博客</title>
+  <meta name="description" content="记录开发中踩过的雷，新知识备忘" />
+  <meta name="keywords" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="alternate" href="/atom.xml" title="老袁博客">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/assets/css/waves.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+  <header class="blog-header">
+	<div class='wrapper'>
+		<div class="nav-main container container--flex">
+			<a class="logo flat-box" href='/' >
+				老袁博客
+			</a>
+			<div class='menu'>
+				<ul class='h-list'>
+					
+						<li>
+							<a class='flat-box nav-home' href='/'>
+								首页
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-note' href='/categories/note'>
+								笔记
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-life' href='/categories/life'>
+								生活
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-archives' href='/archives'>
+								归档
+							</a>
+						</li>
+					
+				</ul>
+				<div class='underline'></div>
+			</div>
+			
+			<ul class='switcher h-list'>
+				
+				<li class='s-menu'><a href='javascript:void(0)'><span class="icon icon-menu flat-box"></span></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<aside class="menu-phone">
+	<nav>
+		
+			<a href="/" class="nav-home nav">
+				首页
+			</a>
+		
+			<a href="/categories/note" class="nav-note nav">
+				笔记
+			</a>
+		
+			<a href="/categories/life" class="nav-life nav">
+				生活
+			</a>
+		
+			<a href="/archives" class="nav-archives nav">
+				归档
+			</a>
+		
+	</nav>
+</aside>
+
+  <div class="blog-wrapper">
+    <div class='container clearfix'>
+      <div class='blog-main'>
+        <article id="post-mysql-for-update"
+  class="post white-box article-type-post"
+  itemscope itemprop="blogPost">
+	<section class='meta'>
+	<h2 class="title">
+  	<a href="/posts/mysql-for-update.html">
+    	MySQL使用For Update锁表
+    </a>
+  </h2>
+	<time>
+	  2017-6-7
+	</time>
+	
+    
+    <div class='cats'>
+        <a href="/categories/note/">笔记</a>
+    </div>
+
+	</section>
+	
+		<section class="toc-wrapper"></section>
+	
+	<section class="article typo">
+  	<div class="article-entry" itemprop="articleBody">
+    	<p>有时为了保证数据的一致性，需要对数据库进行锁表操作，在Mysql中则可以使用<code>FOR UPDATE</code>命令锁表，出于对性能的考虑，则需要判断Mysql使用<code>FOR UPDATE</code>命令锁表到底是锁定的整个表，还是仅仅锁定查询记录行。<br><a id="more"></a></p>
+<ul>
+<li><p>首先测试主键过滤条件的情况，开始事务A：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">| id     | desc | action | create_time         |</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">| 154950 | 9999 | 9      | 2017-06-07 10:46:40 |</div><div class="line">| 154952 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154953 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154954 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154955 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154956 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>接着开始事务B，发现事务B能立刻执行，表明对where条件为主键的情况，是锁记录行，不是锁表：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154890 and 154899 for update;</div><div class="line">+--------+-------------------------------------------------------------------------------+--------+---------------------+</div><div class="line">| id     | desc                                                                          | action | create_time         |</div><div class="line">+--------+-------------------------------------------------------------------------------+--------+---------------------+</div><div class="line">| 154897 | 746db81780f0                                                                  | 1      | 2017-04-01 09:39:17 |</div><div class="line">| 154898 | 9999                                                                          | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154899 | 9                                                                             | 1      | 2017-04-01 09:40:13 |</div><div class="line">+--------+-------------------------------------------------------------------------------+--------+---------------------+</div><div class="line">3 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>提交上述两个事物，重新开始事务A：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.desc='9999' for update;</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">| id     | desc | action | create_time         |</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">| 154950 | 9999 | 9      | 2017-06-07 10:46:40 |</div><div class="line">| 154952 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154953 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154954 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154955 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">| 154956 | 9999 | 2      | 2017-06-07 10:18:56 |</div><div class="line">+--------+------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>再开始事务B，查询和事务A不一样的条件，结果发现事务B发生了等待：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.desc='66666' for update;</div></pre></td></tr></table></figure>
+</li>
+<li><p>再对UNIQUE字段(camp_offer_id)条件进行测试，开始事务A：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select g.id,g.camp_offer_id,g.create_time from group g where g.camp_offer_id ='XX03' for update;</div><div class="line">+----+---------------+---------------------+</div><div class="line">| id | camp_offer_id | create_time         |</div><div class="line">+----+---------------+---------------------+</div><div class="line">|  7 | XX03          | 2017-03-22 17:43:29 |</div><div class="line">+----+---------------+---------------------+</div><div class="line">1 row in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>开始事务B，发现事务B能顺利执行：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select g.id,g.camp_offer_id,g.create_time from group g where g.camp_offer_id ='XX04' for update;</div><div class="line">+----+---------------+---------------------+</div><div class="line">| id | camp_offer_id | create_time         |</div><div class="line">+----+---------------+---------------------+</div><div class="line">|  8 | XX04          | 2017-03-22 17:43:39 |</div><div class="line">+----+---------------+---------------------+</div><div class="line">1 row in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>再不能使用索引条件的语句进行测试，开启事务A：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select g.id,g.camp_offer_id,g.create_time from ra_customer_group g where g.camp_offer_id like "%XX%" for update;</div><div class="line">+----+---------------+---------------------+</div><div class="line">| id | camp_offer_id | create_time         |</div><div class="line">+----+---------------+---------------------+</div><div class="line">|  5 | XX01          | 2017-03-22 17:43:05 |</div><div class="line">|  6 | XX02          | 2017-03-22 17:43:18 |</div><div class="line">|  7 | XX03          | 2017-03-22 17:43:29 |</div><div class="line">+----+---------------+---------------------+</div><div class="line">3 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>开启查询事务B,发现发生了锁等待：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt;  select g.id,g.camp_offer_id,g.create_time from ra_customer_group g where g.camp_offer_id = "9000008" for update;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>通过对一系列的测试对比不难发现，SQL条件中能使用索引进行数据检索时，则<code>FOR UPDATE</code>命令使用的是行级锁，当不能使用索引进行数据检索时，<code>FOR UPDATE</code>命令使用的是表锁。  </p>
+<blockquote>
+<p>MySQL的InnoDB引擎只有通过索引条件检索数据，InnoDB才使用行级锁，否则，InnoDB将使用表锁！</p>
+</blockquote>
+
+  	</div>
+	  
+	  <div class="article-tags tags">
+      
+        <a href="/tags/mysql/">mysql</a>
+      
+	  </div>
+    
+	</section>
+	
+	<div id="SOHUCS" sid="/posts/mysql-for-update.html" ></div> 
+<script type="text/javascript"> 
+(function(){ 
+var appid = 'cyt2Iri4K'; 
+var conf = 'prod_a7a21e8a415cb36f40e9c674f42cbecc'; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+</article>
+
+      </div>
+      <aside class='blog-side'>
+        
+  <section class='m_widget categories'>
+<div class='header'>分类</div>
+<div class='content'>
+    
+    <ul class="entry">
+    
+        <li><a class="flat-box" href="/categories/life/"><div class='name'>生活</div><div class='badget'>1</div></a></li>
+    
+        <li><a class="flat-box" href="/categories/note/"><div class='name'>笔记</div><div class='badget'>9</div></a></li>
+    
+    </ul>
+    
+</div>
+</section>
+
+  
+<div class="m_widget tagcloud">
+    <div class="header">标签</div>
+    <div class='content'>
+        <a href="/tags/javascript/" style="font-size: 14px; color: #808080">javascript</a> <a href="/tags/linux/" style="font-size: 14px; color: #808080">linux</a> <a href="/tags/mysql/" style="font-size: 20px; color: #000">mysql</a> <a href="/tags/redis/" style="font-size: 17px; color: #404040">redis</a>
+    </div>
+</div>
+
+
+
+      </aside>
+    </div>
+  </div>
+  <footer class="blog-footer clearfix">
+  <div class="go">
+    <a title="滑到顶部" class="top"><span class="icon icon-arrow-up"></span></a>
+     
+    <a title="滑到底部" class="bottom"><span class="icon icon-arrow-down"></span></a>
+  </div>
+	<div class="social-wrapper">
+  	
+      
+        <a href="/sitemap.xml" class="social map"
+          target="_blank" rel="external" title="站点地图">
+          <span class="icon icon-map"></span>
+        </a>
+      
+    
+  </div>
+  <div>
+    <p>Copyright <a href="https://laoyuan.me" class="codename">Laoyuan' Blog</a> . All rights reserved .</p>
+    <p>Hosted by <a href="https://coding.net/register?key=952daaf0-37ea-4318-b7d9-093147260917" target="_black" rel="nofollow">Coding Pages</a></p>
+</div>
+</footer>
+
+
+  <script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/waves.min.js"></script>
+<script src="/assets/js/jquery.fitvids.js"></script>
+<script src="/assets/js/all.js"></script>
+
+<script src="https://hm.baidu.com/hm.js?4aaad9b419b7455a604387184ee2306c"></script>
+
+
+</body>
+</html>

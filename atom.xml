@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>老袁博客</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://laoyuan.me/"/>
+  <updated>2017-06-08T09:27:38.027Z</updated>
+  <id>https://laoyuan.me/</id>
+  
+  <author>
+    <name>老袁</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>快速查看和解决MySQL死锁问题</title>
+    <link href="https://laoyuan.me/posts/how-to-show-mysql-lock.html"/>
+    <id>https://laoyuan.me/posts/how-to-show-mysql-lock.html</id>
+    <published>2017-06-08T08:52:03.000Z</published>
+    <updated>2017-06-08T09:27:38.027Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在项目开发中，可能会遇到数据库发生死锁的情况出现，可以参考通过以下步骤，快速定位和发现死锁的位置，并手动解决死锁。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查看数据库中打开的表&lt;br&gt;通过查看当前数据库打开了哪些表，可以大概分析出，死锁会发生在哪些表格中。  &lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mysql&amp;gt; SHOW OPEN TABLES WHERE In_use &amp;gt; 0;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+----------+-------+--------+-------------+&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;| Database | Table | In_use | Name_locked |&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+----------+-------+--------+-------------+&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;| db_t     | oplog |      1 |           0 |&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+----------+-------+--------+-------------+&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;1 row in set&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="mysql" scheme="https://laoyuan.me/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL使用For Update锁表</title>
+    <link href="https://laoyuan.me/posts/mysql-for-update.html"/>
+    <id>https://laoyuan.me/posts/mysql-for-update.html</id>
+    <published>2017-06-07T03:27:34.000Z</published>
+    <updated>2017-06-07T05:27:56.943Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;有时为了保证数据的一致性，需要对数据库进行锁表操作，在Mysql中则可以使用&lt;code&gt;FOR UPDATE&lt;/code&gt;命令锁表，出于对性能的考虑，则需要判断Mysql使用&lt;code&gt;FOR UPDATE&lt;/code&gt;命令锁表到底是锁定的整个表，还是仅仅锁定查询记录行。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="mysql" scheme="https://laoyuan.me/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Redis实现分布式锁</title>
+    <link href="https://laoyuan.me/posts/distributed-locks-with-redis.html"/>
+    <id>https://laoyuan.me/posts/distributed-locks-with-redis.html</id>
+    <published>2017-06-06T05:37:34.000Z</published>
+    <updated>2017-06-08T08:21:14.301Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;原理&quot;&gt;&lt;a href=&quot;#原理&quot; class=&quot;headerlink&quot; title=&quot;原理&quot;&gt;&lt;/a&gt;原理&lt;/h4&gt;&lt;p&gt;通过Redis提供的&lt;code&gt;setnx&lt;/code&gt;命令实现，此命令实现只有当Redis中key不存在才能设置成功。  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当 key 设置成功返回 1&lt;/li&gt;
+&lt;li&gt;当 key 设置失败返回 0
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="redis" scheme="https://laoyuan.me/tags/redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>理解Mysql可重复读事务隔离级别</title>
+    <link href="https://laoyuan.me/posts/mysql-repeatable-read.html"/>
+    <id>https://laoyuan.me/posts/mysql-repeatable-read.html</id>
+    <published>2017-06-02T09:07:41.000Z</published>
+    <updated>2017-06-07T05:28:08.630Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h4&gt;&lt;p&gt;今天遇到数据并发导入，数量统计的问题，需求如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;存在客户表A，与客群表B，一个客群在客群表中仅有一条记录，一个客群对应多个客户&lt;/li&gt;
+&lt;li&gt;首先需要把客户数据导入客户表，再统计出客户表中同一客群的用户数量，更新客群表中记录的客户数量属性&lt;/li&gt;
+&lt;li&gt;需要保证客户表中同一客群的客户数量和客群表中记录的客户总数一致&lt;/li&gt;
+&lt;li&gt;同一个客群会被不同的事务同时导入
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="mysql" scheme="https://laoyuan.me/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL防止数据重复插入</title>
+    <link href="https://laoyuan.me/posts/mysql-data-not-repeat.html"/>
+    <id>https://laoyuan.me/posts/mysql-data-not-repeat.html</id>
+    <published>2017-06-02T03:27:15.000Z</published>
+    <updated>2017-06-07T08:33:05.664Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;项目经常会遇到批量导入数据的需求：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;多JVM实例分批次批量数据导入&lt;/li&gt;
+&lt;li&gt;导入数据可能存在重复数据&lt;/li&gt;
+&lt;li&gt;数据导入可能存在重试，即重复发起导入情况&lt;/li&gt;
+&lt;li&gt;导入的数据需要保证在数据库中唯一性，即不能同一个数据生成2条记录&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="mysql" scheme="https://laoyuan.me/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Redis集合差集、交集、并集处理</title>
+    <link href="https://laoyuan.me/posts/redis-set-diff-inter-union.html"/>
+    <id>https://laoyuan.me/posts/redis-set-diff-inter-union.html</id>
+    <published>2017-05-26T08:47:58.000Z</published>
+    <updated>2017-05-27T08:10:57.413Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;Sdiff&quot;&gt;&lt;a href=&quot;#Sdiff&quot; class=&quot;headerlink&quot; title=&quot;Sdiff&quot;&gt;&lt;/a&gt;Sdiff&lt;/h4&gt;&lt;p&gt;Redis Sdiff 命令返回给定集合之间的差集。不存在的集合 key 将视为空集。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;语法&lt;br&gt;redis Sdiff 命令基本语法如下：&lt;figure class=&quot;highlight sh&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;redis 127.0.0.1:6379&amp;gt; SDIFF FIRST_KEY OTHER_KEY1..OTHER_KEYN&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="redis" scheme="https://laoyuan.me/tags/redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Javascript字符转日期</title>
+    <link href="https://laoyuan.me/posts/javascript-data-parse.html"/>
+    <id>https://laoyuan.me/posts/javascript-data-parse.html</id>
+    <published>2017-05-25T08:38:11.000Z</published>
+    <updated>2017-05-25T09:09:17.807Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天遇到一个需求是需要验证2个时间（HH:mm:ss）必须相差1小时，最终采用Javascript自带的 &lt;code&gt;Date.parse()&lt;/code&gt;解决，写了一个公共方法如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;validPassPullTime&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;begin, end&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; year = &lt;span class=&quot;string&quot;&gt;&#39;2017/05/24 &#39;&lt;/span&gt;;&lt;span class=&quot;comment&quot;&gt;//基准时间，由于传入参数不带具体年月日，所以需要补全日期基准&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;       &lt;span class=&quot;comment&quot;&gt;//Date.parse() 处理时间格式为:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; beginDate = &lt;span class=&quot;built_in&quot;&gt;Date&lt;/span&gt;.parse(year + begin); &lt;span class=&quot;comment&quot;&gt;//开始时间  &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; endDate = &lt;span class=&quot;built_in&quot;&gt;Date&lt;/span&gt;.parse(year + end); &lt;span class=&quot;comment&quot;&gt;//结束时间  &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;//相差秒&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; seconds = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (beginDate &amp;gt; endDate) &amp;#123;&lt;span class=&quot;comment&quot;&gt;//跨夜&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;		seconds = beginDate - endDate;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;span class=&quot;comment&quot;&gt;//不跨夜&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;		seconds = endDate - beginDate;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;//计算出小时数  &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; leave1 = seconds % (&lt;span class=&quot;number&quot;&gt;24&lt;/span&gt; * &lt;span class=&quot;number&quot;&gt;3600&lt;/span&gt; * &lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; hours = &lt;span class=&quot;built_in&quot;&gt;Math&lt;/span&gt;.floor(leave1 / (&lt;span class=&quot;number&quot;&gt;3600&lt;/span&gt; * &lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; hours &amp;gt;= &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个方法主要用户判断2个时间（HH:mm:ss）相差是否超过一个小时，超过一个小时返回&lt;code&gt;ture&lt;/code&gt;,否则返回&lt;code&gt;false&lt;/code&gt;。原理就是先用&lt;code&gt;Date.parse()&lt;/code&gt;把时间转为毫秒，再通过毫秒进行时间转换与比对。最后总结一下Javascript自带的 &lt;code&gt;Date.parse()&lt;/code&gt;方法。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="javascript" scheme="https://laoyuan.me/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Redis数据结构</title>
+    <link href="https://laoyuan.me/posts/redis-data-structure.html"/>
+    <id>https://laoyuan.me/posts/redis-data-structure.html</id>
+    <published>2017-05-24T01:42:32.000Z</published>
+    <updated>2017-05-25T09:09:25.930Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;结构简介&quot;&gt;&lt;a href=&quot;#结构简介&quot; class=&quot;headerlink&quot; title=&quot;结构简介&quot;&gt;&lt;/a&gt;结构简介&lt;/h4&gt;&lt;p&gt;Redis可以储存键与5种不同数据结构类型之间的映射，这5种数据结构类型分别为String（字符串）、List（列表）、Set（集合）、Hash（散列）、Zset（有序集合）。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&quot;text-align:left&quot;&gt;数据结构&lt;/th&gt;
+&lt;th style=&quot;text-align:left&quot;&gt;结构描述&lt;/th&gt;
+&lt;th style=&quot;text-align:left&quot;&gt;操作命令&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;String&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;字符串、数字&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;GET SET DEL&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;List&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;双向链表,每个节点可以存放一个字符串或数字&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;LPUSH RPUSH LPOP RPOP LRANGE LINDEX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;Set&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;无序字符串集合，每个节点字符串唯一&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;SADD SMEMBERS SISMEMBER SREM&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;Hash&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;包含键值对的无序散列表&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;HSET HGET HGETALL HDEL&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;Zset&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;有序集合，集合中每个成员都有一个分值，集合成员根据分值排序&lt;/td&gt;
+&lt;td style=&quot;text-align:left&quot;&gt;ZADD ZRANGE ZRANGEBYSCORE ZREM&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="redis" scheme="https://laoyuan.me/tags/redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>常用Linux命令</title>
+    <link href="https://laoyuan.me/posts/linux-command.html"/>
+    <id>https://laoyuan.me/posts/linux-command.html</id>
+    <published>2017-05-23T06:45:11.000Z</published>
+    <updated>2017-05-25T09:09:22.630Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;磁盘命令&quot;&gt;&lt;a href=&quot;#磁盘命令&quot; class=&quot;headerlink&quot; title=&quot;磁盘命令&quot;&gt;&lt;/a&gt;磁盘命令&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;查看磁盘和分区分布&lt;figure class=&quot;highlight sh&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# lsblk&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;NAME MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;sdb    8:16   0  512M  0 disk [SWAP]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;sdc    8:32   0   10G  0 disk&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;sda    8:0    0  9.5G  0 disk /&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="笔记" scheme="https://laoyuan.me/categories/note/"/>
+    
+    
+      <category term="linux" scheme="https://laoyuan.me/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>你好，世界</title>
+    <link href="https://laoyuan.me/posts/hello.html"/>
+    <id>https://laoyuan.me/posts/hello.html</id>
+    <published>2017-05-20T11:34:52.000Z</published>
+    <updated>2017-06-09T01:36:26.086Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;人的一生有太多东西需要学习和记忆，工作中也有许多的新知识点需要记忆，踩过的雷也需要备忘，所以从此开始记录自己成长的点点滴滴！&lt;br&gt;目前的状态总是有好的想法不能表达出来，希望能通过梳理知识点备忘，顺便提升自己的表达能力。&lt;br&gt;或许患上了程序员的强迫症，或许本该双子座的活泼性格错位到了处女座的完美情结，总是想写一个博客，却每次都止于博客程序的开发中，往往都不了了之。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="生活" scheme="https://laoyuan.me/categories/life/"/>
+    
+    
+  </entry>
+  
+</feed>

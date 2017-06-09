@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>标签: javascript | 老袁博客</title>
+  <meta name="description" content="记录开发中踩过的雷，新知识备忘" />
+  <meta name="keywords" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="alternate" href="/atom.xml" title="老袁博客">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/assets/css/waves.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+  <header class="blog-header">
+	<div class='wrapper'>
+		<div class="nav-main container container--flex">
+			<a class="logo flat-box" href='/' >
+				老袁博客
+			</a>
+			<div class='menu'>
+				<ul class='h-list'>
+					
+						<li>
+							<a class='flat-box nav-home' href='/'>
+								首页
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-note' href='/categories/note'>
+								笔记
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-life' href='/categories/life'>
+								生活
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-archives' href='/archives'>
+								归档
+							</a>
+						</li>
+					
+				</ul>
+				<div class='underline'></div>
+			</div>
+			
+			<ul class='switcher h-list'>
+				
+				<li class='s-menu'><a href='javascript:void(0)'><span class="icon icon-menu flat-box"></span></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<aside class="menu-phone">
+	<nav>
+		
+			<a href="/" class="nav-home nav">
+				首页
+			</a>
+		
+			<a href="/categories/note" class="nav-note nav">
+				笔记
+			</a>
+		
+			<a href="/categories/life" class="nav-life nav">
+				生活
+			</a>
+		
+			<a href="/archives" class="nav-archives nav">
+				归档
+			</a>
+		
+	</nav>
+</aside>
+
+  <div class="blog-wrapper">
+    <div class='container clearfix'>
+      <div class='blog-main'>
+        <section class="post-list">
+	
+    <div class='post-wrapper'>
+      <article class="post">
+  <section class="meta">
+    
+    <h2 class="title">
+      <a href="/posts/javascript-data-parse.html">
+        Javascript字符转日期
+      </a>
+    </h2>
+    
+    <time>
+      2017-5-25
+    </time>
+		
+    
+    <div class='cats'>
+        <a href="/categories/note/">笔记</a>
+    </div>
+
+  </section>
+  <section class="article typo">
+	  <p>今天遇到一个需求是需要验证2个时间（HH:mm:ss）必须相差1小时，最终采用Javascript自带的 <code>Date.parse()</code>解决，写了一个公共方法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">validPassPullTime</span>(<span class="params">begin, end</span>) </span>&#123;</div><div class="line">	<span class="keyword">var</span> year = <span class="string">'2017/05/24 '</span>;<span class="comment">//基准时间，由于传入参数不带具体年月日，所以需要补全日期基准</span></div><div class="line">       <span class="comment">//Date.parse() 处理时间格式为:</span></div><div class="line">	<span class="keyword">var</span> beginDate = <span class="built_in">Date</span>.parse(year + begin); <span class="comment">//开始时间  </span></div><div class="line">	<span class="keyword">var</span> endDate = <span class="built_in">Date</span>.parse(year + end); <span class="comment">//结束时间  </span></div><div class="line">	<span class="comment">//相差秒</span></div><div class="line">	<span class="keyword">var</span> seconds = <span class="number">0</span>;</div><div class="line">	<span class="keyword">if</span> (beginDate &gt; endDate) &#123;<span class="comment">//跨夜</span></div><div class="line">		seconds = beginDate - endDate;</div><div class="line">	&#125; <span class="keyword">else</span> &#123;<span class="comment">//不跨夜</span></div><div class="line">		seconds = endDate - beginDate;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//计算出小时数  </span></div><div class="line">	<span class="keyword">var</span> leave1 = seconds % (<span class="number">24</span> * <span class="number">3600</span> * <span class="number">1000</span>);</div><div class="line">	<span class="keyword">var</span> hours = <span class="built_in">Math</span>.floor(leave1 / (<span class="number">3600</span> * <span class="number">1000</span>));</div><div class="line">	<span class="keyword">return</span> hours &gt;= <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法主要用户判断2个时间（HH:mm:ss）相差是否超过一个小时，超过一个小时返回<code>ture</code>,否则返回<code>false</code>。原理就是先用<code>Date.parse()</code>把时间转为毫秒，再通过毫秒进行时间转换与比对。最后总结一下Javascript自带的 <code>Date.parse()</code>方法。<br>
+
+    
+	  <div class="readmore">
+      <a href="/posts/javascript-data-parse.html">阅读更多</a>
+    </div>
+    
+    
+    
+	  <div class="full-width auto-padding tags">
+      
+        <a href="/tags/javascript/">javascript</a>
+      
+	  </div>
+    
+  </section>
+</article>
+    </div>
+  
+</section>
+
+
+      </div>
+      <aside class='blog-side'>
+        
+  <section class='m_widget categories'>
+<div class='header'>分类</div>
+<div class='content'>
+    
+    <ul class="entry">
+    
+        <li><a class="flat-box" href="/categories/life/"><div class='name'>生活</div><div class='badget'>1</div></a></li>
+    
+        <li><a class="flat-box" href="/categories/note/"><div class='name'>笔记</div><div class='badget'>9</div></a></li>
+    
+    </ul>
+    
+</div>
+</section>
+
+  
+<div class="m_widget tagcloud">
+    <div class="header">标签</div>
+    <div class='content'>
+        <a href="/tags/javascript/" style="font-size: 14px; color: #808080">javascript</a> <a href="/tags/linux/" style="font-size: 14px; color: #808080">linux</a> <a href="/tags/mysql/" style="font-size: 20px; color: #000">mysql</a> <a href="/tags/redis/" style="font-size: 17px; color: #404040">redis</a>
+    </div>
+</div>
+
+
+
+      </aside>
+    </div>
+  </div>
+  <footer class="blog-footer clearfix">
+  <div class="go">
+    <a title="滑到顶部" class="top"><span class="icon icon-arrow-up"></span></a>
+     
+    <a title="滑到底部" class="bottom"><span class="icon icon-arrow-down"></span></a>
+  </div>
+	<div class="social-wrapper">
+  	
+      
+        <a href="/sitemap.xml" class="social map"
+          target="_blank" rel="external" title="站点地图">
+          <span class="icon icon-map"></span>
+        </a>
+      
+    
+  </div>
+  <div>
+    <p>Copyright <a href="https://laoyuan.me" class="codename">Laoyuan' Blog</a> . All rights reserved .</p>
+    <p>Hosted by <a href="https://coding.net/register?key=952daaf0-37ea-4318-b7d9-093147260917" target="_black" rel="nofollow">Coding Pages</a></p>
+</div>
+</footer>
+
+
+  <script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/waves.min.js"></script>
+<script src="/assets/js/jquery.fitvids.js"></script>
+<script src="/assets/js/all.js"></script>
+
+<script src="https://hm.baidu.com/hm.js?4aaad9b419b7455a604387184ee2306c"></script>
+
+
+</body>
+</html>

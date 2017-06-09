@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>理解Mysql可重复读事务隔离级别 | 老袁博客</title>
+  <meta name="description" content="记录开发中踩过的雷，新知识备忘" />
+  <meta name="keywords" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="alternate" href="/atom.xml" title="老袁博客">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/assets/css/waves.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+  <header class="blog-header">
+	<div class='wrapper'>
+		<div class="nav-main container container--flex">
+			<a class="logo flat-box" href='/' >
+				老袁博客
+			</a>
+			<div class='menu'>
+				<ul class='h-list'>
+					
+						<li>
+							<a class='flat-box nav-home' href='/'>
+								首页
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-note' href='/categories/note'>
+								笔记
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-life' href='/categories/life'>
+								生活
+							</a>
+						</li>
+					
+						<li>
+							<a class='flat-box nav-archives' href='/archives'>
+								归档
+							</a>
+						</li>
+					
+				</ul>
+				<div class='underline'></div>
+			</div>
+			
+			<ul class='switcher h-list'>
+				
+				<li class='s-menu'><a href='javascript:void(0)'><span class="icon icon-menu flat-box"></span></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<aside class="menu-phone">
+	<nav>
+		
+			<a href="/" class="nav-home nav">
+				首页
+			</a>
+		
+			<a href="/categories/note" class="nav-note nav">
+				笔记
+			</a>
+		
+			<a href="/categories/life" class="nav-life nav">
+				生活
+			</a>
+		
+			<a href="/archives" class="nav-archives nav">
+				归档
+			</a>
+		
+	</nav>
+</aside>
+
+  <div class="blog-wrapper">
+    <div class='container clearfix'>
+      <div class='blog-main'>
+        <article id="post-mysql-repeatable-read"
+  class="post white-box article-type-post"
+  itemscope itemprop="blogPost">
+	<section class='meta'>
+	<h2 class="title">
+  	<a href="/posts/mysql-repeatable-read.html">
+    	理解Mysql可重复读事务隔离级别
+    </a>
+  </h2>
+	<time>
+	  2017-6-2
+	</time>
+	
+    
+    <div class='cats'>
+        <a href="/categories/note/">笔记</a>
+    </div>
+
+	</section>
+	
+		<section class="toc-wrapper"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#问题描述"><span class="toc-number">1.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#问题思考"><span class="toc-number">2.</span> <span class="toc-text">问题思考</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#测试实例"><span class="toc-number">3.</span> <span class="toc-text">测试实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-number">4.</span> <span class="toc-text">解决方案</span></a></li></ol></section>
+	
+	<section class="article typo">
+  	<div class="article-entry" itemprop="articleBody">
+    	<h4 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h4><p>今天遇到数据并发导入，数量统计的问题，需求如下：</p>
+<ul>
+<li>存在客户表A，与客群表B，一个客群在客群表中仅有一条记录，一个客群对应多个客户</li>
+<li>首先需要把客户数据导入客户表，再统计出客户表中同一客群的用户数量，更新客群表中记录的客户数量属性</li>
+<li>需要保证客户表中同一客群的客户数量和客群表中记录的客户总数一致</li>
+<li>同一个客群会被不同的事务同时导入<a id="more"></a>
+<h4 id="问题思考"><a href="#问题思考" class="headerlink" title="问题思考"></a>问题思考</h4>最初考虑采用事务采用MySQL事务隔离级别<code>Repeatable read</code>解决这个问题，最终发现错误的使用了事务隔离级别<code>Repeatable read</code>，或者说解决思路不对。<br>错误思考如下：  </li>
+<li>开启一个事务，插入客户数据到客户表，查询出客群总数，更新客群表总数</li>
+<li>多个事务会依次执行，正确的更新客群表总数</li>
+</ul>
+<p>仔细测试MySQL事务隔离级别<code>Repeatable read</code>后，才发现，<code>Repeatable read</code>事务隔离级别保证的是，当前事务中查询到的数据是一致的，并且外部事务提交的数据，本次事务也不能发现外部事务提交的修改。可以保证对同一行数据的修改存在先后顺序，即：两个事物同时修改同一条记录，后修改的事务需要等待前一个事务提交后才能修改。</p>
+<h4 id="测试实例"><a href="#测试实例" class="headerlink" title="测试实例"></a>测试实例</h4><p>详细测试实例如下:</p>
+<ul>
+<li><p>先确认当前连接的默认事务级别  </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; select @@tx_isolation;</div><div class="line">+-----------------+</div><div class="line">| @@tx_isolation  |</div><div class="line">+-----------------+</div><div class="line">| REPEATABLE-READ |</div><div class="line">+-----------------+</div><div class="line">1 row in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>查询出数据库原始内容备用：  </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 2      | 2017-04-01 17:00:00 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>开启一个事务A，更新ID=154950的action字段为’9999’  </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 2      | 2017-04-01 17:00:00 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div><div class="line"></div><div class="line">mysql&gt; update oplog o set o.action = 9999 where o.id = 154950; </div><div class="line">Query OK, 1 row affected</div><div class="line">Rows matched: 1  Changed: 1  Warnings: 0</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 9999   | 2017-06-07 09:55:22 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>开启一个事务B，更新ID=154950的action字段为’3’   </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 2      | 2017-04-01 17:00:00 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div><div class="line"></div><div class="line">mysql&gt; update oplog o set o.action = 3 where o.id = 154950; </div><div class="line">1205 - Lock wait timeout exceeded; try restarting transaction</div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 2      | 2017-04-01 17:00:00 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>等待大约20秒左右，会发现提示等待锁失败，表明事务B是在等待事务A执行。接着先提交事务A，再提交事务B，查看事务B提交后的数据结果如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mysql&gt; commit;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 1      | 2017-06-07 09:55:22 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>再对非主键查询条件做同样的测试，事务A执行情况：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 9999   | 2017-06-07 10:11:03 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div><div class="line"></div><div class="line">mysql&gt; update oplog o set o.desc= 9999 where o.action = 9999; </div><div class="line">Query OK, 1 row affected</div><div class="line">Rows matched: 1  Changed: 1  Warnings: 0</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 9999             | 9999   | 2017-06-07 10:12:50 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div></pre></td></tr></table></figure>
+</li>
+<li><p>事务B执行情况：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">mysql&gt; begin;</div><div class="line">Query OK, 0 rows affected</div><div class="line"></div><div class="line">mysql&gt; select o.id,o.desc,o.action,o.create_time from oplog o where o.id between 154950 and 154975;</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| id     | desc             | action | create_time         |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">| 154950 | 自动更新订单状态 | 9999   | 2017-06-07 10:11:03 |</div><div class="line">| 154952 | 自动更新订单状态 | 2      | 2017-04-01 17:10:00 |</div><div class="line">| 154953 | 自动更新订单状态 | 2      | 2017-04-01 17:20:00 |</div><div class="line">| 154954 | 自动更新订单状态 | 2      | 2017-04-01 17:30:00 |</div><div class="line">| 154955 | 自动更新订单状态 | 2      | 2017-04-01 17:40:00 |</div><div class="line">| 154956 | 自动更新订单状态 | 2      | 2017-04-01 17:50:00 |</div><div class="line">+--------+------------------+--------+---------------------+</div><div class="line">6 rows in set</div><div class="line"></div><div class="line">mysql&gt; update oplog o set o.desc= 9999 where o.action = 6;</div><div class="line">1205 - Lock wait timeout exceeded; try restarting transaction</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>最终采用在代码中，对客群名称加入分布式锁解决问题，即同一时间，只能有一个服务插入客群并且更新客群数量。</p>
+
+  	</div>
+	  
+	  <div class="article-tags tags">
+      
+        <a href="/tags/mysql/">mysql</a>
+      
+	  </div>
+    
+	</section>
+	
+	<div id="SOHUCS" sid="/posts/mysql-repeatable-read.html" ></div> 
+<script type="text/javascript"> 
+(function(){ 
+var appid = 'cyt2Iri4K'; 
+var conf = 'prod_a7a21e8a415cb36f40e9c674f42cbecc'; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+</article>
+
+      </div>
+      <aside class='blog-side'>
+        
+  <section class='m_widget categories'>
+<div class='header'>分类</div>
+<div class='content'>
+    
+    <ul class="entry">
+    
+        <li><a class="flat-box" href="/categories/life/"><div class='name'>生活</div><div class='badget'>1</div></a></li>
+    
+        <li><a class="flat-box" href="/categories/note/"><div class='name'>笔记</div><div class='badget'>9</div></a></li>
+    
+    </ul>
+    
+</div>
+</section>
+
+  
+<div class="m_widget tagcloud">
+    <div class="header">标签</div>
+    <div class='content'>
+        <a href="/tags/javascript/" style="font-size: 14px; color: #808080">javascript</a> <a href="/tags/linux/" style="font-size: 14px; color: #808080">linux</a> <a href="/tags/mysql/" style="font-size: 20px; color: #000">mysql</a> <a href="/tags/redis/" style="font-size: 17px; color: #404040">redis</a>
+    </div>
+</div>
+
+
+
+      </aside>
+    </div>
+  </div>
+  <footer class="blog-footer clearfix">
+  <div class="go">
+    <a title="滑到顶部" class="top"><span class="icon icon-arrow-up"></span></a>
+     
+    <a title="滑到底部" class="bottom"><span class="icon icon-arrow-down"></span></a>
+  </div>
+	<div class="social-wrapper">
+  	
+      
+        <a href="/sitemap.xml" class="social map"
+          target="_blank" rel="external" title="站点地图">
+          <span class="icon icon-map"></span>
+        </a>
+      
+    
+  </div>
+  <div>
+    <p>Copyright <a href="https://laoyuan.me" class="codename">Laoyuan' Blog</a> . All rights reserved .</p>
+    <p>Hosted by <a href="https://coding.net/register?key=952daaf0-37ea-4318-b7d9-093147260917" target="_black" rel="nofollow">Coding Pages</a></p>
+</div>
+</footer>
+
+
+  <script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/waves.min.js"></script>
+<script src="/assets/js/jquery.fitvids.js"></script>
+<script src="/assets/js/all.js"></script>
+
+<script src="https://hm.baidu.com/hm.js?4aaad9b419b7455a604387184ee2306c"></script>
+
+
+</body>
+</html>
